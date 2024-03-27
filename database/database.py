@@ -3,7 +3,7 @@ from contextvars import ContextVar
 import peewee
 from fastapi import Depends
 
-DATABASE_NAME = "test.db"
+DATABASE_NAME = "database.db"
 db_state_default = {"closed": None, "conn": None, "ctx": None, "transactions": None}
 db_state = ContextVar("db_state", default=db_state_default.copy())
 
