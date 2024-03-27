@@ -1,0 +1,5 @@
+fastapi~=0.110.0
+peewee
+passlib[bcrypt]
+pydantic[email]
+python-jose
