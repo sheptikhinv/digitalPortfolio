@@ -1,2 +1,2 @@
-from .user import UserBase, UserAuthenticate, UserCreate, User, Token
-
+from .user import UserBase, UserInput, User, Token
+from .profile import ProfileUpdate, ProfileCreate, Profile, ProfileResponse

@@ -10,7 +10,7 @@ def get_user_by_email(email: str) -> models.User:
     return models.User.filter(models.User.email == email).first()
 
 
-def add_user(user: schemas.UserCreate) -> models.User:
+def add_user(user: schemas.UserInput) -> models.User:
     user_db = models.User(email=user.email, password=PasswordManager.get_password_hash(user.password))
     user_db.save()
     return user_db

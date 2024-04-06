@@ -8,13 +8,13 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=schemas.Token, dependencies=[Depends(get_db)])
-async def create_user(user: schemas.UserCreate):
+async def create_user(user: schemas.UserInput):
     user_db = cruds.add_user(user)
     return schemas.Token(access_token=TokenManager.create_token(data={"sub": str(user_db.id)}), token_type="bearer")
 
 
 @router.post("/login", response_model=schemas.Token, dependencies=[Depends(get_db)])
-async def login_user(user: schemas.UserAuthenticate):
+async def login_user(user: schemas.UserInput):
     user_db = cruds.get_user_by_email(user.email)
     if not user_db or not PasswordManager.verify_password(user.password, user_db.password):
         raise HTTPException(

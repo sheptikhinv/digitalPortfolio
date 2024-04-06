@@ -8,7 +8,7 @@ from starlette import status
 from database import cruds, models
 from .config import get_value
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 class TokenManager:
@@ -33,6 +33,9 @@ class TokenManager:
 
     @classmethod
     def verify_token(cls, credentials: HTTPAuthorizationCredentials = Depends(security)) -> models.User:
+        if not credentials:
+            raise cls.credentials_exception
+
         token = credentials.credentials
         try:
             payload = jwt.decode(token, cls.secret_key, algorithms="HS256")
@@ -46,3 +49,14 @@ class TokenManager:
         except JWTError as e:
             raise cls.credentials_exception
 
+    @classmethod
+    def optionally_verify_token(cls, credentials: HTTPAuthorizationCredentials = Depends(security,
+                                                                                         use_cache=False)) -> models.User | None:
+        if not credentials:
+            return None
+
+        try:
+            return cls.verify_token(credentials)
+
+        except HTTPException as e:
+            return None

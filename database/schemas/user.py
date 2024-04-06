@@ -6,19 +6,15 @@ from database.schemas.utils import PeeweeGetterDict
 
 class UserBase(BaseModel):
     email: pydantic.EmailStr
+
+
+class UserInput(UserBase):
     password: str
-
-
-class UserCreate(UserBase):
-    ...
-
-
-class UserAuthenticate(UserBase):
-    ...
 
 
 class User(UserBase):
     id: int
+    password: str
 
     class Config:
         orm_mode = True
