@@ -12,16 +12,13 @@ is_development = get_value("is_development")
 
 if is_development.lower() in ["true", "yes", "y"]:
     origins = [
-        "http://127.0.0.1:8000",
-        "http://127.0.0.1:3000"
-        "http://localhost",
-        "http://localhost:3000",
+        "*",
     ]
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
-        allow_credentials=True,
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )
