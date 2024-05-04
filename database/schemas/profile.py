@@ -1,8 +1,9 @@
 from typing import Optional
 
 import pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
 
+from .. import models
 from database.schemas.utils import PeeweeGetterDict
 
 
@@ -20,6 +21,7 @@ class ProfileCreate(ProfileUpdate):
 
 class Profile(ProfileUpdate):
     user_id: int
+    projects_count: int = Field(default=0)
 
     class Config:
         orm_mode = True

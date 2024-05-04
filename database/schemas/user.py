@@ -12,6 +12,10 @@ class UserInput(UserBase):
     password: str
 
 
+class UserOutput(UserBase):
+    id: int
+
+
 class User(UserBase):
     id: int
     password: str

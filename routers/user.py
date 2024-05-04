@@ -25,6 +25,6 @@ async def login_user(user: schemas.UserInput):
     return schemas.Token(access_token=TokenManager.create_token(data={"sub": str(user_db.id)}), token_type="bearer")
 
 
-@router.get("/me", response_model=schemas.UserBase, dependencies=[Depends(get_db)])
+@router.get("/me", response_model=schemas.UserOutput, dependencies=[Depends(get_db)])
 async def current_user(user: models.User = Depends(TokenManager.verify_token)):
     return user

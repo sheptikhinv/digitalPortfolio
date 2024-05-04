@@ -9,6 +9,8 @@ router = APIRouter(prefix="/profiles", tags=["profiles"])
 @router.get("/{user_id}", response_model=schemas.ProfileResponse, dependencies=[Depends(get_db)])
 async def get_profile_by_id(user_id: int, user: models.User | None = Depends(TokenManager.optionally_verify_token)):
     profile = cruds.get_profile_by_id(user_id)
+    print(profile.projects_count)
+    print(profile.__dict__)
     return schemas.ProfileResponse(can_edit=user is not None and user.id == user_id,
                                    data=profile.__data__)
 
