@@ -10,4 +10,4 @@ if __name__ == '__main__':
     if get_value("is_development").lower() == "reload":
         uvicorn.run("routers.main:app", reload=True)
     else:
-        uvicorn.run("routers.main:app", host="127.0.0.1", port=5000)
+        uvicorn.run("routers.main:app", host="127.0.0.1", port=5000, root_path="/api")
