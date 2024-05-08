@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from database import schemas, get_db, models, cruds
-from helpers import TokenManager
+from helpers import TokenManager, exceptions
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -18,6 +18,9 @@ async def get_user_projects(user_id: int, user: models.User | None = Depends(Tok
 @router.get("/get_by_id/{project_id}", response_model=schemas.ProjectOutput, dependencies=[Depends(get_db)])
 async def get_project_by_id(project_id: int, user: models.User | None = Depends(TokenManager.optionally_verify_token)):
     project = cruds.get_project_by_id(project_id)
+    if project is None:
+        raise exceptions.project_not_found
+    print(project.username)
     return schemas.ProjectOutput(can_edit=user is not None and project.user_id == user, data=project.__data__)
 
 

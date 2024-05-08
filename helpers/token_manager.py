@@ -6,18 +6,13 @@ from jose import jwt, JWTError
 from starlette import status
 
 from database import cruds, models
+from . import exceptions
 from .config import get_value
 
 security = HTTPBearer(auto_error=False)
 
 
 class TokenManager:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"}
-    )
-
     secret_key = get_value("SECRET_KEY")
 
     @classmethod
@@ -34,20 +29,20 @@ class TokenManager:
     @classmethod
     def verify_token(cls, credentials: HTTPAuthorizationCredentials = Depends(security)) -> models.User:
         if not credentials:
-            raise cls.credentials_exception
+            raise exceptions.credentials_exception
 
         token = credentials.credentials
         try:
             payload = jwt.decode(token, cls.secret_key, algorithms="HS256")
             user_id = payload.get("sub")
             if user_id is None:
-                raise cls.credentials_exception
+                raise exceptions.credentials_exception
             user = cruds.get_user_by_id(user_id)
             if user is None:
-                raise cls.credentials_exception
+                raise exceptions.credentials_exception
             return user
         except JWTError as e:
-            raise cls.credentials_exception
+            raise exceptions.credentials_exception
 
     @classmethod
     def optionally_verify_token(cls, credentials: HTTPAuthorizationCredentials = Depends(security,

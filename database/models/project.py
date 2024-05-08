@@ -13,6 +13,16 @@ class Project(peewee.Model):
     created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
     @property
+    def profile(self) -> models.Profile:
+        return self.user_id.profile.get()
+
+    @property
+    def username(self):
+        username = self.profile.name
+        self.__data__['username'] = username
+        return username
+
+    @property
     def likes_count(self) -> int:
         likes = self.likes.count()
         self.__data__['likes_count'] = likes
@@ -30,4 +40,3 @@ class Project(peewee.Model):
 
     class Meta:
         database = db
-
