@@ -17,26 +17,26 @@ class Project(peewee.Model):
         return self.user_id.profile.get()
 
     @property
-    def username(self):
-        username = self.profile.name
-        self.__data__['username'] = username
-        return username
+    def username(self) -> str:
+        return self.profile.name
 
     @property
     def likes_count(self) -> int:
-        likes = self.likes.count()
-        self.__data__['likes_count'] = likes
-        return likes
+        return self.likes.count()
 
     @property
     def comments_count(self) -> int:
-        comments = self.comments.count()
-        self.__data__['comments_count'] = comments
-        return comments
+        return self.comments.count()
 
     @property
     def project_images(self):
         return [image.image_path for image in self.images]
+
+    def to_dict(self):
+        result = self.__data__
+        result.update(username=self.username, likes_count=self.likes_count, comments_count=self.comments_count,
+                      project_images=self.project_images)
+        return result
 
     class Meta:
         database = db

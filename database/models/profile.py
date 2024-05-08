@@ -15,8 +15,12 @@ class Profile(peewee.Model):
     @property
     def projects_count(self):
         projects_count = models.Project.select().where(models.Project.user_id == self.user_id).count()
-        self.__data__['projects_count'] = projects_count
         return projects_count
+
+    def to_dict(self):
+        result = self.__data__
+        result.update(projects_count=self.projects_count)
+        return result
 
     class Meta:
         database = db

@@ -20,9 +20,9 @@ class Project(ProjectCreate):
     id: int
     user_id: int
     username: str
-    likes_count: int = Field(default=0)
-    comments_count: int = Field(default=0)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    likes_count: int
+    comments_count: int
+    created_at: datetime
 
     class Config:
         orm_mode = True
