@@ -50,15 +50,27 @@ def delete_image_from_project(user: models.User) -> bool:
 
 
 def add_like_to_project(user: models.User, project_id: int) -> models.Project:
-    ...
+    project = get_project_by_id(project_id)
+    if project is None:
+        raise Exception("Project not found")
+    like = models.Like(user_id=user, project_id=project)
+    like.save()
+    return project
 
 
 def delete_like_from_project(user: models.User, project_id: int) -> bool:
-    ...
+    like = models.Like.get(models.Like.user_id == user, models.Like.project_id == project_id)
+    if like is None:
+        raise Exception("Like not found")
+
+    like.delete_instance()
 
 
 def add_comment_to_project(user: models.User, project_id: int, comment: schemas.CommentCreate) -> models.Comment:
-    comment_db = models.Comment(user_id=user, project_id=get_project_by_id(project_id),
+    project = get_project_by_id(project_id)
+    if project is None:
+        raise Exception("Project not found")
+    comment_db = models.Comment(user_id=user, project_id=project,
                                 created_at=datetime.datetime.now(), **comment.dict())
     comment_db.save()
     return comment_db
