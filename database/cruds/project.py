@@ -12,6 +12,14 @@ def get_projects_by_user(user_id: int) -> List[models.Project]:
     return models.Project.filter(models.Project.user_id == user_id)
 
 
+def get_projects(offset: int, limit: int) -> List[models.Project]:
+    return models.Project.select().offset(offset).limit(limit)
+
+
+def get_newest_projects(offset: int, limit: int) -> List[models.Project]:
+    return models.Project.select().order_by(models.Project.created_at.desc()).offset(offset).limit(limit)
+
+
 def create_project(user: models.User, project: schemas.ProjectCreate) -> models.Project:
     project_db = models.Project(user_id=user, **project.dict())
     project_db.save()
