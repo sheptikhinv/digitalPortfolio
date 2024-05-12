@@ -1,6 +1,8 @@
 import datetime
 from typing import List
 
+import peewee
+
 from database import models, schemas
 
 
@@ -53,17 +55,25 @@ def add_like_to_project(user: models.User, project_id: int) -> models.Project:
     project = get_project_by_id(project_id)
     if project is None:
         raise Exception("Project not found")
-    like = models.Like(user_id=user, project_id=project)
-    like.save()
+    like = models.Like.select(models.Like.user_id == user, models.Like.project_id == project_id).exists()
+    if not like:
+        like = models.Like(user_id=user, project_id=project)
+        like.save()
     return project
 
 
-def delete_like_from_project(user: models.User, project_id: int) -> bool:
-    like = models.Like.get(models.Like.user_id == user, models.Like.project_id == project_id)
-    if like is None:
-        raise Exception("Like not found")
+def delete_like_from_project(user: models.User, project_id: int) -> models.Project:
+    project = get_project_by_id(project_id)
+    if project is None:
+        raise Exception("Project not found")
 
-    like.delete_instance()
+    try:
+        like = models.Like.get(models.Like.user_id == user, models.Like.project_id == project_id)
+        like.delete_instance()
+    except models.Like.DoesNotExist:
+        ...
+
+    return project
 
 
 def add_comment_to_project(user: models.User, project_id: int, comment: schemas.CommentCreate) -> models.Comment:

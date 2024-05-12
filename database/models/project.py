@@ -38,5 +38,10 @@ class Project(peewee.Model):
                       project_images=self.project_images)
         return result
 
+    def is_liked(self, user: models.User) -> bool:
+        return models.Like.select().where(
+            (models.Like.user_id == user) & (models.Like.project == self)
+        ).exists()
+
     class Meta:
         database = db

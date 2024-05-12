@@ -31,4 +31,5 @@ class Project(ProjectCreate):
 
 class ProjectOutput(BaseModel):
     can_edit: bool
+    is_liked: bool
     data: Optional[Project] = None
