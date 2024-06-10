@@ -4,6 +4,7 @@ from typing import List
 import peewee
 
 from database import models, schemas
+from helpers import exceptions
 
 
 def get_project_by_id(project_id: int) -> models.Project:
@@ -54,8 +55,8 @@ def delete_image_from_project(user: models.User) -> bool:
 def add_like_to_project(user: models.User, project_id: int) -> models.Project:
     project = get_project_by_id(project_id)
     if project is None:
-        raise Exception("Project not found")
-    like = models.Like.select(models.Like.user_id == user, models.Like.project_id == project_id).exists()
+        raise exceptions.project_not_found
+    like = models.Like.select().where(models.Like.user_id == user and models.Like.project_id == project_id).exists()
     if not like:
         like = models.Like(user_id=user, project_id=project)
         like.save()
@@ -65,10 +66,10 @@ def add_like_to_project(user: models.User, project_id: int) -> models.Project:
 def delete_like_from_project(user: models.User, project_id: int) -> models.Project:
     project = get_project_by_id(project_id)
     if project is None:
-        raise Exception("Project not found")
+        raise exceptions.project_not_found
 
     try:
-        like = models.Like.get(models.Like.user_id == user, models.Like.project_id == project_id)
+        like = models.Like.select().where(models.Like.user_id == user and models.Like.project_id == project_id).get()
         like.delete_instance()
     except models.Like.DoesNotExist:
         ...
