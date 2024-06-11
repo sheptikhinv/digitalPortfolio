@@ -1,9 +1,11 @@
 import os
+from typing import List
 
 from fastapi import UploadFile
 from peewee import IntegrityError
 
 from database import models, schemas
+from helpers import exceptions
 
 
 def get_profile_by_id(user_id: int) -> models.Profile:
@@ -42,3 +44,37 @@ def return_profile_picture(user_id: int) -> str:
     if filenames:
         return f"img/{filenames[0]}"
     return "img/default.png"
+
+
+def subscribe_profile(author_id: int, subscriber: models.User) -> models.Subscription:
+    author = models.User.get_by_id(author_id)
+    if author is None:
+        raise exceptions.user_not_found
+    subscription = models.Subscription.select().where(
+        models.Subscription.author == author & models.Subscription.subscriber == subscriber).exists()
+    print(f"Is subscription exists for {author_id} by {subscriber.id}: {subscription}")
+    if not subscription:
+        print(f"Создаем subscription author_id: {author_id} subscriber_id: {subscriber.id}")
+        subscription = models.Subscription(author=author, subscriber=subscriber)
+        subscription.save()
+        print(subscription)
+    return author
+
+
+def unsubscribe_from_profile(author_id: int, subscriber: models.User):
+    author = models.User.get_by_id(author_id)
+    if author is None:
+        raise exceptions.user_not_found
+
+    try:
+        subscription = models.Subscription.select().where(
+            models.Subscription.author == author & models.Subscription.subscriber == subscriber).get()
+        subscription.delete_instance()
+    except models.Subscription.DoesNotExist:
+        ...
+    return author
+
+
+def get_subscriptions(subscriber: models.User) -> List[models.Profile]:
+    subscriptions = models.Subscription.filter(models.Subscription.subscriber == subscriber)
+    return [get_profile_by_id(subscription.author.id) for subscription in subscriptions]

@@ -21,3 +21,13 @@ wrong_file_type = HTTPException(
     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
     detail="Cant process this file here"
 )
+
+user_not_found = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="User not found"
+)
+
+subscribed_to_yourself = HTTPException(
+    status_code=status.HTTP_406_NOT_ACCEPTABLE,
+    detail="Subscirbing to yourself"
+)

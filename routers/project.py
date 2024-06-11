@@ -33,16 +33,21 @@ async def create_project(project: schemas.ProjectCreate, user: models.User = Dep
 async def get_projects(limit: int = 10, offset: int = 0,
                        user: models.User = Depends(TokenManager.optionally_verify_token)):
     projects = cruds.get_projects(offset=offset, limit=limit)
-    return [mappers.project_to_output(user=user, project=project) for
-            project in projects]
+    return [mappers.project_to_output(user=user, project=project) for project in projects]
 
 
 @router.get("/newest", response_model=List[schemas.ProjectOutput], dependencies=[Depends(get_db)])
 async def get_newest_projects(limit: int = 10, offset: int = 0,
                               user: models.User = Depends(TokenManager.optionally_verify_token)):
     projects = cruds.get_newest_projects(offset=offset, limit=limit)
-    return [mappers.project_to_output(user=user, project=project) for
-            project in projects]
+    return [mappers.project_to_output(user=user, project=project) for project in projects]
+
+
+@router.get("/subscribed", response_model=List[schemas.ProjectOutput], dependencies=[Depends(get_db)])
+async def get_subscribed_projects(limit: int = 10, offset: int = 0,
+                                  user: models.User = Depends(TokenManager.verify_token)):
+    projects = cruds.get_subscribed_projects(offset=offset, limit=limit, user=user)
+    return [mappers.project_to_output(user=user, project=project) for project in projects]
 
 
 @router.post("/add_like", response_model=schemas.ProjectOutput, dependencies=[Depends(get_db)])

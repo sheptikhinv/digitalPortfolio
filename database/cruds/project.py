@@ -23,6 +23,14 @@ def get_newest_projects(offset: int, limit: int) -> List[models.Project]:
     return models.Project.select().order_by(models.Project.created_at.desc()).offset(offset).limit(limit)
 
 
+def get_subscribed_projects(offset: int, limit: int, user: models.User) -> List[models.Project]:
+    return (models.Project.
+            select()
+            .where(models.Project.user_id << [subscription.author for subscription in user.subscriptions])
+            .offset(offset)
+            .limit(limit))
+
+
 def create_project(user: models.User, project: schemas.ProjectCreate) -> models.Project:
     project_db = models.Project(user_id=user, **project.dict())
     project_db.save()

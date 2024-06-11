@@ -22,6 +22,7 @@ class ProfileCreate(ProfileUpdate):
 class Profile(ProfileUpdate):
     user_id: int
     projects_count: int = Field(default=0)
+    subscribers_count: int = Field(default=0)
 
     class Config:
         orm_mode = True
@@ -30,4 +31,5 @@ class Profile(ProfileUpdate):
 
 class ProfileResponse(BaseModel):
     can_edit: bool
+    is_subscribed: bool
     data: Optional[Profile] = None
