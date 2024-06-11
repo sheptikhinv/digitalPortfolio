@@ -16,3 +16,8 @@ project_not_found = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Project not found"
 )
+
+wrong_file_type = HTTPException(
+    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+    detail="Cant process this file here"
+)
