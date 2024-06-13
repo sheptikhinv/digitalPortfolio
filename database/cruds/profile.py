@@ -51,7 +51,7 @@ def subscribe_profile(author_id: int, subscriber: models.User) -> models.Subscri
     if author is None:
         raise exceptions.user_not_found
     subscription = models.Subscription.select().where(
-        models.Subscription.author == author & models.Subscription.subscriber == subscriber).exists()
+        (models.Subscription.author == author) & (models.Subscription.subscriber == subscriber)).exists()
     print(f"Is subscription exists for {author_id} by {subscriber.id}: {subscription}")
     if not subscription:
         print(f"Создаем subscription author_id: {author_id} subscriber_id: {subscriber.id}")
@@ -68,7 +68,7 @@ def unsubscribe_from_profile(author_id: int, subscriber: models.User):
 
     try:
         subscription = models.Subscription.select().where(
-            models.Subscription.author == author & models.Subscription.subscriber == subscriber).get()
+            (models.Subscription.author == author) & (models.Subscription.subscriber == subscriber)).get()
         subscription.delete_instance()
     except models.Subscription.DoesNotExist:
         ...
