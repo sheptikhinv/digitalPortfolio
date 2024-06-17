@@ -11,6 +11,7 @@ class Project(peewee.Model):
     title = peewee.CharField()
     description = peewee.TextField()
     created_at = peewee.DateTimeField(default=datetime.datetime.now)
+    preview = peewee.CharField()
 
     @property
     def profile(self) -> models.Profile:
@@ -29,13 +30,13 @@ class Project(peewee.Model):
         return self.comments.count()
 
     @property
-    def project_images(self):
-        return [image.image_path for image in self.images]
+    def pictures(self):
+        return [image.__data__ for image in self.images]
 
     def to_dict(self):
         result = self.__data__
         result.update(username=self.username, likes_count=self.likes_count, comments_count=self.comments_count,
-                      project_images=self.project_images)
+                      pictures=self.pictures)
         return result
 
     def is_liked(self, user: models.User) -> bool:

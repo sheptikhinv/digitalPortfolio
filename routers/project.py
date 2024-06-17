@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
+from starlette.responses import FileResponse
 
 from database import schemas, get_db, models, cruds
 from helpers import TokenManager, exceptions, mappers
@@ -60,3 +61,8 @@ async def like_project(project_id: int, user: models.User = Depends(TokenManager
 async def unlike_project(project_id: int, user: models.User = Depends(TokenManager.verify_token)):
     project = cruds.delete_like_from_project(user=user, project_id=project_id)
     return mappers.project_to_output(user=user, project=project)
+
+
+@router.get("/get_image/{path}", response_class=FileResponse)
+async def get_image(path: str):
+    return FileResponse(cruds.get_project_image(path))

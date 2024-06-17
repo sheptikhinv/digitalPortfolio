@@ -1,9 +1,18 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
 from database.schemas.utils import PeeweeGetterDict
+
+
+class ProjectImage(BaseModel):
+    picture: str
+    description: Optional[str] = None
+
+
+class ProjectFile(BaseModel):
+    file: str
 
 
 class ProjectUpdate(BaseModel):
@@ -14,6 +23,8 @@ class ProjectUpdate(BaseModel):
 class ProjectCreate(BaseModel):
     title: str
     description: str
+    pictures: Optional[List[ProjectImage]] = []
+    preview: str
 
 
 class Project(ProjectCreate):

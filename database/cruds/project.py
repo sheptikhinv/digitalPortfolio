@@ -1,4 +1,6 @@
+import base64
 import datetime
+import uuid
 from typing import List
 
 import peewee
@@ -31,9 +33,43 @@ def get_subscribed_projects(offset: int, limit: int, user: models.User) -> List[
             .limit(limit))
 
 
+def add_image_to_project(project: models.Project, image: schemas.ProjectImage) -> models.Project:
+    image_uuid = str(uuid.uuid4())
+    image_data = image.picture.split(",")
+    image_bytes = str.encode(image_data[1])
+    file_format = image_data[0].split('/')[1].split(';')[0]
+    with open(f"img/{image_uuid}.{file_format}", "wb") as file:
+        file.write(base64.urlsafe_b64decode(image_bytes))
+    project_image = models.ProjectImage(project=project, picture=f"{image_uuid}.{file_format}",
+                                        description=image.description)
+    project_image.save()
+    return project
+
+
+def add_preview(preview: str) -> str:
+    image_uuid = str(uuid.uuid4())
+    image_data = preview.split(",")
+    image_bytes = str.encode(image_data[1])
+    file_format = image_data[0].split('/')[1].split(';')[0]
+    with open(f"img/{image_uuid}.{file_format}", "wb") as file:
+        file.write(base64.urlsafe_b64decode(image_bytes))
+    return f"{image_uuid}.{file_format}"
+
+
+def delete_image_from_project(project: models.Project) -> bool:
+    ...
+
+
+def get_project_image(path: str):
+    return f"img/{path}"
+
+
 def create_project(user: models.User, project: schemas.ProjectCreate) -> models.Project:
-    project_db = models.Project(user_id=user, **project.dict())
+    project_db = models.Project(user_id=user, title=project.title, description=project.description)
+    project_db.preview = add_preview(project.preview)
     project_db.save()
+    for image in project.pictures:
+        add_image_to_project(project_db, image)
     return project_db
 
 
@@ -50,14 +86,6 @@ def delete_project(user_id: int, project_id: int) -> bool:
     project_db = models.Project.filter(models.Project.id == project_id and models.Project.user_id == user_id).first()
     project_db.delete_instance()
     return True
-
-
-def add_image_to_project(user: models.User) -> models.Project:
-    ...
-
-
-def delete_image_from_project(user: models.User) -> bool:
-    ...
 
 
 def add_like_to_project(user: models.User, project_id: int) -> models.Project:
